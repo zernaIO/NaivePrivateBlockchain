@@ -1,0 +1,80 @@
+{
+  "name": "@zernaIO/NaivePrivateBlockchain",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npm-run-all build:**",
+    "build:js:core:clean": "rimraf dist",
+    "build:js:core:tsc": "tsc",
+    "build:js:core:lint": "tslint -c tslint.json src/**/*.ts",
+    "build:js:core:test": "mocha --opts ./mocha.opts",
+    "blockchain:simulation": "npm-run-all blockchain:service:**",
+    "blockchain:service:genesis": "SERVICE=GENESIS_GENERATE npm start",
+    "blockchain:service:createBlocks": "SERVICE=CREATE_BLOCKS npm start",
+    "blockchain:service:stats": "SERVICE=BLOCK_STATS npm start",
+    "blockchain:service:verify": "SERVICE=CHAIN_VERIFY npm start",
+    "start": "node dist/index.js",
+    "watch": "nodemon -e ts --exec npm run build"
+  },
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "dotenv": "^5.0.0",
+    "inversify": "4.2.0",
+    "inversify-inject-decorators": "^3.1.0",
+    "level": "^4.0.0",
+    "lodash": "^4.17.4",
+    "node-fetch": "^1.7.3",
+    "reflect-metadata": "^0.1.10"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/cron": "^1.2.1",
+    "@types/errorhandler": "0.0.30",
+    "@types/lodash": "^4.14.76",
+    "@types/mocha": "^2.2.43",
+    "@types/node": "^8.0.31",
+    "@types/sinon": "^2.3.5",
+    "chai": "^4.1.2",
+    "mocha": "^3.5.3",
+    "nodemon": "^1.12.1",
+    "npm-run-all": "^4.1.2",
+    "nyc": "^11.2.1",
+    "rimraf": "^2.6.2",
+    "sinon": "^2.4.1",
+    "sinon-chai": "^2.14.0",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.9.1",
+    "typescript": "^2.5.3"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "src/**/*.spec.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zernaIO/NaivePrivateBlockchain.git"
+  },
+  "author": "",
+  "license": "GNU GPLv3",
+  "bugs": {
+    "url": "https://github.com/zernaIO/NaivePrivateBlockchain/issues"
+  },
+  "homepage": "https://github.com/zernaIO/NaivePrivateBlockchain/blob/master/README.md"
+}
