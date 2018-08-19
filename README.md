@@ -25,7 +25,7 @@
   * Exchange value of BLOCKS_TO_CREATE within your `.env` file. This value is responsible for how many blocks are created.
 
 # Short recap about the service invocation 
-More precisely, the environment variables are used to decide which service is to be called. If this variable is not set, a warning is output and a default is used. This default is currently the verification of the blockchain. 
+This project is controlled via env parameters.More precisely, the environment variables are used to decide which service is to be called. If this variable is not set, a warning is output and a default is used. This default is currently the verification of the blockchain. 
 So that not every service key has to be known, all service calls are provided as npm script. These are now presented.
    * `npm run blockchain:service:genesis` will generate a genesis block. As in this version it will override existing genesis blocks. Please use a new DB or delete a existing LevelDB directory.
    * `npm run blockchain:service:createBlocks` will generate a specific number of blocks. It will throw an error if the genesis block was not found.
