@@ -9,6 +9,24 @@ import * as _ from 'lodash';
 
 describe('NaivePrivateBlockchainService', () => {
 
+    const validBlocks = [
+        { hash: '10af472ab3803eb984c4effd85188a9749076c8815df0c72711ef522b2ac9bd0',
+            height: 7,
+            body: 6,
+            time: 1534780445,
+            previousBlockHash: '190d4809f95500cdb093be14fa935b72f4378ed5d13dd60b39e4dc601469bea8' },
+        { hash: 'dd4f0a5aa9005ea6e9cfc4a0fe319e349c44d6b3c59cbcf045eb598f1d0f4ba3',
+            height: 8,
+            body: 7,
+            time: 1534780445,
+            previousBlockHash: '10af472ab3803eb984c4effd85188a9749076c8815df0c72711ef522b2ac9bd0' },
+        { hash: '81739b334c6a86977d98dd06ca6ff5fb35867ddb43999f2bd44a03a1408cf348',
+            height: 9,
+            body: 8,
+            time: 1534780445,
+            previousBlockHash: 'dd4f0a5aa9005ea6e9cfc4a0fe319e349c44d6b3c59cbcf045eb598f1d0f4ba3' },
+    ];
+
     const buildBlock = (key: number) => {
         const block: Block = new Block(key);
         block.time = 420;
@@ -91,13 +109,15 @@ describe('NaivePrivateBlockchainService', () => {
 
     describe('validateChain', () => {
         it('should return a true if chain is valid', async () => {
-            spy = sinon.stub(BlockchainRepositoryMock, 'getKeys').returns(promiseMock([0, 1]));
+            spy = sinon.stub(BlockchainRepositoryMock, 'getKeys').returns(promiseMock([0, 1, 2]))
+            BlockchainRepositoryMock.get = (key: number) => { return promiseMock(_.clone(validBlocks[key])); };
             const result = await _NaivePrivateBlockchainService.validateChain();
             expect(result).to.be.ok;
         });
 
         it('should return false if chain is not valid', async () => {
-            spy = sinon.stub(BlockchainRepositoryMock, 'getKeys').returns(promiseMock([0]));
+            spy = sinon.stub(BlockchainRepositoryMock, 'getKeys').returns(promiseMock([0, 1, 2]));
+            BlockchainRepositoryMock.get = (key: number) => { return promiseMock(_.clone(validBlocks[key])); };
             _NaivePrivateBlockchainService = new NaivePrivateBlockchainService(BlockchainRepositoryMock, {getHash: () => 'NOT_VALID_HASH' }, LogMock);
             const result = await _NaivePrivateBlockchainService.validateChain();
             expect(result).to.be.not.ok;

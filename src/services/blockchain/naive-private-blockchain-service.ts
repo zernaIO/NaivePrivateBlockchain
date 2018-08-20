@@ -21,7 +21,7 @@ export class NaivePrivateBlockchainService implements BlockchainService {
 
     async addBlock(block: Block) {
         try {
-            block.height = await this.getBlockHeight();
+            block.height = await this.getBlockHeight() + 1;
             this.enrichWithTimestamp(block);
             const latest_block: Block = await this.getLatestBlock();
             block.previousBlockHash = latest_block.hash;
@@ -58,7 +58,7 @@ export class NaivePrivateBlockchainService implements BlockchainService {
 
     async getBlockHeight(): Promise<number> {
         const keys = await this.levelDbRepository.getKeys();
-        return keys.length;
+        return keys.length - 1;
     }
 
     async getBlock(key: number): Promise<Block> {
@@ -66,9 +66,9 @@ export class NaivePrivateBlockchainService implements BlockchainService {
     }
 
     async getBlockStats(): Promise<BlockStats> {
-        const height = await this.getBlockHeight();
+        const block_keys = await this.levelDbRepository.getKeys();
         return {
-            blocks: height
+            blocks: block_keys.length
         };
     }
 
@@ -95,13 +95,20 @@ export class NaivePrivateBlockchainService implements BlockchainService {
     }
 
     async validateChain(): Promise<boolean> {
-        const keys = await this.levelDbRepository.getKeys();
+        const block_height = await this.getBlockHeight();
         const errorBlocks: number[] = [];
         let itr = 0;
-        while (itr < keys.length) {
+        while (itr <= block_height) {
             const isValid = await this.validateBlock(itr);
             if (!isValid) {
                 errorBlocks.push(itr);
+            }
+            if (itr < block_height) {
+                const block = await this.getBlock(itr);
+                const next_block = await this.getBlock(itr + 1);
+                if (block.hash !== next_block.previousBlockHash) {
+                    errorBlocks.push(itr);
+                }
             }
             itr++;
         }
